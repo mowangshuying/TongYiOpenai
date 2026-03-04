@@ -10,5 +10,8 @@ target_link_libraries(Translate ${HV_LIBRARIES})
 add_executable(ImageGeneration ImageGeneration.cpp)
 target_link_libraries(ImageGeneration ${HV_LIBRARIES})
 
+add_executable(ImageEdit ImageEdit.cpp)
+target_link_libraries(ImageEdit ${HV_LIBRARIES})
+
 
 

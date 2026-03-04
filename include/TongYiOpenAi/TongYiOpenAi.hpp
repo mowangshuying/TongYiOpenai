@@ -77,6 +77,17 @@ class CategoryImageGeneration {
         TongYiOpenAi& m_openAi;
 };
 
+/// 图像编辑
+class CategoryImageEdit {
+    public:
+        CategoryImageEdit(TongYiOpenAi &openai) : m_openAi{openai} {}
+        Json create(Json input);
+        /// 模型概览
+        std::list<std::string> list();
+    protected:
+        TongYiOpenAi& m_openAi;
+};
+
 /// 模型部署相关接口
 class CategoryModelDeployments {
 public:
@@ -98,17 +109,6 @@ public:
 protected:
     TongYiOpenAi& m_openai;
 };
-
-// /// 翻译模型
-// class CategoryTranslation {
-// public:
-//     CategoryTranslation(TongYiOpenAi& openai) : m_openai(openai) {}
-
-//     Json create(Json input);
-
-// protected:
-//     TongYiOpenAi& m_openai;
-// };
 
 
 class TongYiOpenAi {
@@ -290,6 +290,7 @@ class TongYiOpenAi {
     public:
         CategoryCompletion completion{*this};
         CategoryImageGeneration imageGeneration{*this};
+        CategoryImageEdit imageEdit{*this};
         CategoryModelDeployments modelDeployments{*this};
         CategoryMore more{*this};
     protected:
@@ -320,6 +321,19 @@ std::list<std::string> CategoryImageGeneration::list() {
     return models;
 }
 
+Json CategoryImageEdit::create(Json input)
+{
+    return m_openAi.post(input);
+}
+
+std::list<std::string> CategoryImageEdit::list() {
+    std::list<std::string> models;
+    models.push_back("qwen-image-edit-max");
+    models.push_back("qwen-image-edit-plus");
+    models.push_back("qwen-image-edit");
+    return models;
+}
+
 //curl - X POST "https://dashscope.aliyuncs.com/api/v1/tokens?expire_in_seconds=1800" \
 //- H "Authorization: Bearer $DASHSCOPE_API_KEY"
 //临时 API Key 默认有效期为60秒，支持设置超时时间范围为[1, 1800]秒。
@@ -328,12 +342,6 @@ Json CategoryMore::makeTempToken(int expire_in_seconds)
     std::string httpurl = "https://dashscope.aliyuncs.com/api/v1/tokens?expire_in_seconds=" + std::to_string(expire_in_seconds);
     //return m_openai.get(httpurl);
     return m_openai.post(httpurl, "", Json{});
-}
-
-/// not class method;
-TongYiOpenAi& instance() {
-   static TongYiOpenAi _instance;
-   return _instance;
 }
 
 Json CategoryModelDeployments::list()
@@ -347,6 +355,12 @@ Json CategoryModelDeployments::list(int pageNo, int pageSize)
     // https://dashscope.aliyuncs.com/api/v1/deployments/models?pageNo=1&pageSize=10
     std::string httpurl = "https://dashscope.aliyuncs.com/api/v1/deployments/models?pageNo=" + std::to_string(pageNo) + "&pageSize=" + std::to_string(pageSize);
     return m_openai.get(httpurl);
+}
+
+
+TongYiOpenAi& instance() {
+   static TongYiOpenAi _instance;
+   return _instance;
 }
 
 void __init(std::string httpurl, std::string token)
@@ -380,6 +394,10 @@ inline CategoryImageGeneration& imageGeneration() {
     return instance().imageGeneration;
 }
 
+inline CategoryImageEdit& imageEdit() {
+    return instance().imageEdit;
+}
+
 inline CategoryModelDeployments& modelDeployments() {
     return instance().modelDeployments;
 }
@@ -398,6 +416,7 @@ using __detail::post;
 
 using __detail::completion;
 using __detail::imageGeneration;
+using __detail::imageEdit;
 using __detail::modelDeployments;
 using __detail::more;
 

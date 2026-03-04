@@ -76,7 +76,7 @@ int main() {
     hlog_set_level(LOG_LEVEL_DEBUG);
 
 
-    TongYiOpenAi::__init("ttps://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation", 
+    TongYiOpenAi::__init("https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation", 
         "sk-c43463e3702d452fa7d873efb7808eae");
 
     auto json = TongYiOpenAi::imageGeneration().create(R"(

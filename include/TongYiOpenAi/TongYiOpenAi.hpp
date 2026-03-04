@@ -302,7 +302,13 @@ class TongYiOpenAi {
             }
             return json;
         }
-        
+
+        /// download file;
+        size_t download(std::string httpurl, std::string path)
+        {
+             return requests::downloadFile(httpurl.c_str(), path.c_str());
+        }
+
         /// isJson
         bool isJson(const std::string &data){
             bool rc = true;
@@ -432,6 +438,11 @@ inline Json get(Json input) {
     return instance().get(input);
 }
 
+/// download;
+inline size_t download(std::string httpurl, std::string path) {
+    return instance().download(httpurl, path);
+}
+
 inline CategoryCompletion& completion() {
     return instance().completion;
 }
@@ -463,6 +474,8 @@ using __detail::instance;
 using __detail::__init;
 using __detail::__initByEnv;
 using __detail::post;
+using __detail::get;
+using __detail::download;
 
 using __detail::completion;
 using __detail::imageGeneration;
